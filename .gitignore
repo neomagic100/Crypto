@@ -1,5 +1,7 @@
 # Custom Secret
 databaseUtils/
+dbdata/
+docker-compose.yml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -34,7 +34,7 @@ class Coin():
         self.slug = data["slug"]
         self.num_market_pairs = castInt(data["num_market_pairs"])
         self.date_added = parser.parse(data["date_added"])
-        self.tags = data["tags"]
+        self.tags = data["tags"] # FIXME loaded in DB with weird formatting
         self.max_supply = castFloat(data["max_supply"])
         self.circulating_supply = castFloat(data["circulating_supply"])
         self.total_supply = castFloat(data["total_supply"])
@@ -55,6 +55,28 @@ class Coin():
     def getCurrency(self, dictkeys):
         for key in dictkeys:
             return key
+        
+    def toEntry(self):
+        # entryString = f'"_id": "{self.symbol}", "id": "{self.id}", "name": "{self.name}", "symbol": "{self.symbol}", "slug": "{self.slug}", "num_market_pairs": "{self.num_market_pairs}", ' \
+        #     + f'"date_added": "{self.date_added}", "tags": "{self.tags}", "max_supply": "{self.max_supply}", "circulating_supply": "{self.circulating_supply}", ' \
+        #     + f'"total_supply": "{self.total_supply}", "infinite_supply": "{self.infinite_supply}", "platform": "{self.platform}", "cmc_rank": "{self.cmc_rank}", ' \
+        #     + f'"self_reported_circulating_supply": "{self.self_reported_circulating_supply}", "self_reported_market_cap": "{self.self_reported_market_cap}", ' \
+        #     + f'"tvl_ratio": "{self.tvl_ratio}", "last_updated": "{self.last_updated}", "currency": "{self.currency}", "quote": {self.quote.toSingleEntry()}'
+        # return entryString
+        
+        entryDict = {"_id": f"{self.symbol}", "id": f"{self.id}", "name": f"{self.name}", "symbol": f"{self.symbol}", "slug": f"{self.slug}", "num_market_pairs": f"{self.num_market_pairs}", 
+            "date_added": f"{self.date_added}", "tags": f"{self.tags}", "max_supply": f"{self.max_supply}", "circulating_supply": f"{self.circulating_supply}", 
+            "total_supply": f"{self.total_supply}", "infinite_supply": f"{self.infinite_supply}", "platform": f"{self.platform}", "cmc_rank": f"{self.cmc_rank}", 
+            "self_reported_circulating_supply": f"{self.self_reported_circulating_supply}", "self_reported_market_cap": f"{self.self_reported_market_cap}", 
+            "tvl_ratio": f"{self.tvl_ratio}", "last_updated": f"{self.last_updated}", "currency": f"{self.currency}", "quote": []}
+        
+        entryDict["quote"].append(self.quote.toEntry())
+        return entryDict
+    
+    # def toSingleEntry(self):
+    #     entryString = self.toEntry()
+    #     return ("{%s}" % entryString)
+         
         
     def getQuote(self):
         return self.quote
