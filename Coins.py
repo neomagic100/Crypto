@@ -1,6 +1,5 @@
 # import sqlite3 as sql
-import pymongo
-from databaseUtils.Constants import Mongo
+
 from utils.globalConstants import FileConstants
 import time
 import os
