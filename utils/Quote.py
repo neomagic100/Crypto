@@ -27,11 +27,11 @@ class Quote():
         #     + f'"percent_change_90d": "{self.percent_change_90d}", "market_cap": "{self.market_cap}", "market_cap_dominance": "{self.market_cap_dominance}", ' \
         #     + f'"fully_diluted_market_cap": "{self.fully_diluted_market_cap}", "tvl": "{self.tvl}", "last_updated": "{self.last_updated}"'
         # return entryString
-        entryDict = {f"{self.last_updated}" : {"price": f"{self.price}", "volume_24h": f"{self.volume_24h}", "volume_change_24h": f"{self.volume_change_24h}",
+        entryDict = {"price": f"{self.price}", "volume_24h": f"{self.volume_24h}", "volume_change_24h": f"{self.volume_change_24h}",
             "percent_change_1h": f"{self.percent_change_1h}", "percent_change_24h": f"{self.percent_change_24h}", "percent_change_7d": f"{self.percent_change_7d}",
             "percent_change_30d": f"{self.percent_change_30d}", "percent_change_60d": f"{self.percent_change_60d}",
             "percent_change_90d": f"{self.percent_change_90d}", "market_cap": f"{self.market_cap}", "market_cap_dominance": f"{self.market_cap_dominance}",
-            "fully_diluted_market_cap": f"{self.fully_diluted_market_cap}", "tvl": f"{self.tvl}", "last_updated": f"{self.last_updated}"}}
+            "fully_diluted_market_cap": f"{self.fully_diluted_market_cap}", "tvl": f"{self.tvl}", "last_updated": f"{self.last_updated}"}
         return entryDict
     
     # def toSingleEntry(self):

@@ -1,5 +1,5 @@
 from utils.typeProtection import castFloat, castInt, noneProtect, \
-    strToBool
+    strToBool, replaceChar, Db_Protect
 from utils.Quote import Quote
 from dateutil import parser
 import sqlite3
@@ -9,6 +9,7 @@ class Coin():
         self.id = None
         self.name = None
         self.symbol = None
+        self.altSymbol = None # Store symbol is invalid in database
         self.slug = None
         self.num_market_pairs = None
         self.date_added = None
@@ -30,7 +31,7 @@ class Coin():
     def createCoin(self, data):
         self.id = castInt(data["id"])
         self.name = data["name"]
-        self.symbol = data["symbol"]
+        self.symbol = self.verifySymbol(data["symbol"])
         self.slug = data["slug"]
         self.num_market_pairs = castInt(data["num_market_pairs"])
         self.date_added = parser.parse(data["date_added"])
@@ -51,6 +52,30 @@ class Coin():
     def createQuote(self, quoteData):
         quote = Quote(quoteData, self.currency)
         return quote
+    
+    def verifySymbol(self, symbol):
+        tempSymbol = symbol
+        
+        if symbol == "":
+            self.altSymbol = symbol
+            tempSymbol = self.getName()
+        
+        if "$" in tempSymbol:
+            self.altSymbol = symbol
+            tempSymbol = tempSymbol.replace("$", Db_Protect.DOLLAR_REPLACEMENT)
+        
+        if tempSymbol.startswith("."):
+            tempSymbol = replaceChar(tempSymbol, Db_Protect.PERIOD_REPLACEMENT, 0)
+        
+        if tempSymbol.endswith("."):
+            tempSymbol = replaceChar(tempSymbol, Db_Protect.PERIOD_REPLACEMENT, -1)
+            
+        return tempSymbol
+        
+    def createQuoteEntry(self):
+        quoteObj = self.quote
+        quoteEntry    = quoteObj.toEntry()
+        return quoteEntry       
         
     def getCurrency(self, dictkeys):
         for key in dictkeys:
@@ -68,9 +93,8 @@ class Coin():
             "date_added": f"{self.date_added}", "tags": f"{self.tags}", "max_supply": f"{self.max_supply}", "circulating_supply": f"{self.circulating_supply}", 
             "total_supply": f"{self.total_supply}", "infinite_supply": f"{self.infinite_supply}", "platform": f"{self.platform}", "cmc_rank": f"{self.cmc_rank}", 
             "self_reported_circulating_supply": f"{self.self_reported_circulating_supply}", "self_reported_market_cap": f"{self.self_reported_market_cap}", 
-            "tvl_ratio": f"{self.tvl_ratio}", "last_updated": f"{self.last_updated}", "currency": f"{self.currency}", "quote": []}
+            "tvl_ratio": f"{self.tvl_ratio}", "last_updated": f"{self.last_updated}", "currency": f"{self.currency}"}
         
-        entryDict["quote"].append(self.quote.toEntry())
         return entryDict
     
     # def toSingleEntry(self):
@@ -97,3 +121,9 @@ class Coin():
             + f"{self.self_reported_circulating_supply};" \
             + f"{self.self_reported_market_cap};{self.tvl_ratio};" \
             + f"{self.last_updated};{self.quote}"
+            
+    def getSymbol(self):      
+        return self.symbol
+    
+    def getName(self):
+        return self.name

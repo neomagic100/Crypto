@@ -2,6 +2,9 @@
 databaseUtils/
 dbdata/
 docker-compose.yml
+error.txt
+test
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
