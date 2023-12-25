@@ -1,9 +1,7 @@
 # Custom Secret
-databaseUtils/
-dbdata/
-docker-compose.yml
 error.txt
 test
+test.*
 
 
 # Byte-compiled / optimized / DLL files

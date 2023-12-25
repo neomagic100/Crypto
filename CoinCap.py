@@ -30,5 +30,5 @@ class CoinCap:
     
 if __name__ == "__main__":
     coinCapture = CoinCap()
-    coinCapture.initCoinData()
+    # coinCapture.initCoinData()
     
