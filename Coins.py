@@ -5,6 +5,7 @@ from utils.globalConstants import FileConstants
 from databaseUtils.Constants import MySQL
 from createDBScript import DB_CREATION
 from Coin import Coin
+from utils.sqlEntry import sqlEntry
 import time
 import os
 
@@ -17,14 +18,45 @@ class CoinDB:
         # self.coinCol  = self.db[Mongo.COIN_COLLECTION]
         # self.mysqlConn   = self.getMySqlConnection()
         self.createDatabase()
-        self.quoteCols = []
         self.coins    = []
         self.quotes   = []
         self.currIndex = 0
         self.currQuoteIndex = 0
         self.doneReadingCoins = False
         self.doneReadingQuotes = False
+    
+    def insertCoinsToTable(self):
+        coinString = sqlEntry.insertManyString("coins", self.coins)
+        quoteString = sqlEntry.insertManyString("quotes", self.quotes)
         
+        try:
+            con = mysqlc.connect(user = MySQL.USER, password = MySQL.PASSWORD,
+                                host = MySQL.HOST, port = MySQL.PORT,
+                                database = MySQL.DB)
+        except mysqlc.Error as e:
+            if e.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+                print("Something is wrong with your user name or password")
+            elif e.errno == errorcode.ER_BAD_DB_ERROR:
+                print("Database does not exist")
+            else:
+                print(e)
+           
+        print("getting cursor...")
+        cursor = con.cursor()
+    
+        try:
+            cursor.execute("USE {}".format(DB_CREATION.DB_NAME))
+            cursor.execute(coinString)
+            cursor.execute(quoteString)
+            
+        except mysqlc.Error as err:
+            print(err)
+        else:
+            print(err)
+            exit(1)
+        
+        con.close()
+    
     def createDatabase(self) -> mysqlc.connection:
         try:
             con = mysqlc.connect(user = MySQL.USER, password = MySQL.PASSWORD,
@@ -55,6 +87,8 @@ class CoinDB:
                 print(err)
                 exit(1)
         
+        con.close()
+        
     def getMySqlConnection(self):
         try:
             con = mysqlc.connect(user = MySQL.USER, password = MySQL.PASSWORD,
@@ -74,43 +108,15 @@ class CoinDB:
                 
     # Add coin and quote to internal list
     def addCoin(self, coin) -> None:
-        quoteCol = self.db[coin.getSymbol()]
-        self.quoteCols.append(quoteCol)
-        self.quotes.append(coin.createQuoteEntry())
-        # insertedQuote = quoteCol.insert_one(coin.createQuoteEntry())
-        # print(f"{insertedQuote} {coin.getSymbol()}")
-        
-        if not self.coinExists(symbol = coin.getSymbol()):
-            # inserted = self.coinCol.insert_one(coin.toEntry())
-            self.coins.append(coin.toEntry())
-            # print(f"{inserted} {coin.name}") 
+        self.quotes.append(coin.quote)
+        if not coin.containedIn(self.coins):
+            self.coins.append(coin)
            
     def resetParams(self) -> None:
         self.currQuoteIndex = 0
         self.currIndex = 0
         self.doneReadingCoins = False
         self.doneReadingQuotes = False
-            
-    def getCurrentIndex(self, masterIdx) -> int:
-        cwd = os.getcwd()
-        path = os.path.join(cwd, FileConstants.ERROR_FILE)
-        
-        if not os.path.exists(path):
-            return masterIdx
-        else:
-            currIndex = 0
-            
-            try:
-                with open(FileConstants.ERROR_FILE, "r") as f:
-                    currIndex = f.read(FileConstants.MAX_BUFFER)
-                os.remove(path)
-                
-                return int(currIndex)   
-            except ValueError as ve:
-                if currIndex == "":
-                    return masterIdx
-                else:
-                    return currIndex
     
     def coinExists(self, symbol = None, name = None) -> bool:
         pass

@@ -1,9 +1,12 @@
 from utils.typeProtection import castFloat
+from utils.sqlEntry import sqlEntry
 from dateutil import parser
 import sqlite3
+from utils.globalConstants import SQL
 
-class Quote():
-    def __init__(self, rawQuote, currency):
+class Quote(sqlEntry):
+    def __init__(self, rawQuote, currency, symbol):
+        sqlEntry.__init__(self)
         quote = rawQuote[currency]
         self.price = castFloat(quote["price"])
         self.volume_24h = castFloat(quote["volume_24h"])
@@ -19,6 +22,7 @@ class Quote():
         self.fully_diluted_market_cap = castFloat(quote["fully_diluted_market_cap"])
         self.tvl = quote["tvl"]
         self.last_updated = parser.parse(quote["last_updated"])
+        self.symbol = symbol
 
     def toEntry(self):
         # entryString = f'"price": "{self.price}", "volume_24h": "{self.volume_24h}", "volume_change_24h": "{self.volume_change_24h}", ' \
@@ -34,6 +38,9 @@ class Quote():
             "fully_diluted_market_cap": f"{self.fully_diluted_market_cap}", "tvl": f"{self.tvl}", "last_updated": f"{self.last_updated}"}
         return entryDict
     
+    def getSqlDate(self, date):
+        fDate = date.strftime(SQL.DATE_FORMAT)
+        return str(fDate)
     # def toSingleEntry(self):
     #     entryString = self.toEntry()
     #     return ("{%s}" % entryString)

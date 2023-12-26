@@ -23,12 +23,12 @@ class CoinCap:
         for coin in self.coins:
             self.coinDB.addCoin(coin)
         print("Coins and Quotes fetched")
-        self.coinDB.insertIntoDB()
+        self.coinDB.insertCoinsToTable()
     
     def getDB(self):
         return self.coinDB
     
 if __name__ == "__main__":
     coinCapture = CoinCap()
-    # coinCapture.initCoinData()
+    coinCapture.initCoinData()
     
