@@ -5,6 +5,7 @@ from dateutil import parser
 import sqlite3
 from utils.sqlEntry import sqlEntry
 from utils.globalConstants import SQL
+from datetime import datetime, date
 
 class Coin(sqlEntry):
     def __init__(self, unparsedCoin):
@@ -65,19 +66,31 @@ class Coin(sqlEntry):
         for key in dictkeys:
             return key
         
-    def toEntry(self):     # Removed Tags   
-        entryDict = {"id": f"{self.id}", "name": f"{self.name}", "symbol": f"{self.symbol}", "slug": f"{self.slug}", "num_market_pairs": f"{self.num_market_pairs}", 
-            "date_added": f"{self.date_added}", "max_supply": f"{self.max_supply}", "circulating_supply": f"{self.circulating_supply}", 
-            "total_supply": f"{self.total_supply}", "infinite_supply": f"{self.infinite_supply}", "platform": f"{self.platform}", "cmc_rank": f"{self.cmc_rank}", 
-            "self_reported_circulating_supply": f"{self.self_reported_circulating_supply}", "self_reported_market_cap": f"{self.self_reported_market_cap}", 
-            "tvl_ratio": f"{self.tvl_ratio}", "last_updated": f"{self.last_updated}", "currency": f"{self.currency}"}
+    def toEntry(self):     # Removed Tags
+        self.fixPossibleNones()   
+        entryDict = {"id": self.id, "name": f"{self.name}", "symbol": f"{self.symbol}", "slug": f"{self.slug}", "num_market_pairs": self.num_market_pairs, 
+            "date_added": self.getSqlDate(self.date_added), "tags": "Empty", "max_supply": self.max_supply, "circulating_supply": self.circulating_supply, 
+            "total_supply": self.total_supply, "infinite_supply": f"{self.infinite_supply}", "platform": f"{self.platform}", "cmc_rank": self.cmc_rank, 
+            "self_reported_circulating_supply": self.self_reported_circulating_supply, "self_reported_market_cap": self.self_reported_market_cap, 
+            "tvl_ratio": self.tvl_ratio, "last_updated": self.getSqlDate(self.last_updated), "currency": f"{self.currency}"}
         
         return entryDict
     
     def getSqlDate(self, date):
-        print(f"date read = {date}")
         fDate = date.strftime(SQL.DATE_FORMAT)
-        return str(fDate)
+        return fDate
+    
+    def fixPossibleNones(self):
+        if self.circulating_supply is None or self.circulating_supply == "None":
+            self.circulating_supply = 0
+        if self.self_reported_market_cap is None or self.self_reported_market_cap == "None":
+            self.self_reported_market_cap = 0
+        if self.self_reported_circulating_supply is None or self.self_reported_market_cap == "None":
+            self.self_reported_circulating_supply = 0
+        if self.tvl_ratio is None or self.tvl_ratio == "None":
+            self.tvl_ratio = 0
+        if self.max_supply is None or self.max_supply == "None":
+            self.max_supply = 0
     
     def getQuote(self):
         return self.quote

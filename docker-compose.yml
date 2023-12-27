@@ -46,12 +46,7 @@ services:
       - '3306'
     volumes:
       - my-db:/var/lib/mysql
-  
-  linux:
-    build:
-      context: .
-      dockerfile: Ubuntu.dockerfile
-    
+      
 
 volumes:
   my-db:

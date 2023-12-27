@@ -27,11 +27,17 @@ class sqlEntry():
     
     @staticmethod
     def insertManyString(tableName, iterable):
-        insert = "INSERT INTO TABLE `{}` VALUES ".format(tableName)
+        insert = "INSERT INTO `{}` VALUES ".format(tableName)
         for item in iterable:
             insert += item.toMysqlValuesString() + ", "
         insert = insert[0:-2] + ";"
         return insert
     
+    def insertOneString(tableName, item):
+        insert = "INSERT INTO `{}` VALUES ".format(tableName)
+        insert += item.toMysqlValuesString() + ";"
+        return insert
+    
     def getSqlDate(self, date):
         pass
+     
