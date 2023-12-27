@@ -20,6 +20,7 @@ class CoinDB:
         self.createDatabase()
         self.coins    = []
         self.quotes   = []
+        self.symbols = []
         self.currIndex = 0
         self.currQuoteIndex = 0
         self.doneReadingCoins = False
@@ -28,34 +29,47 @@ class CoinDB:
     def insertCoinsToTable(self):
         coinString = sqlEntry.insertManyString("coins", self.coins)
         quoteString = sqlEntry.insertManyString("quotes", self.quotes)
+        # coinEntryStrings = []
+        # quoteEntryStrings = []
         
-        try:
-            con = mysqlc.connect(user = MySQL.USER, password = MySQL.PASSWORD,
-                                host = MySQL.HOST, port = MySQL.PORT,
-                                database = MySQL.DB)
-        except mysqlc.Error as e:
-            if e.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-                print("Something is wrong with your user name or password")
-            elif e.errno == errorcode.ER_BAD_DB_ERROR:
-                print("Database does not exist")
-            else:
-                print(e)
-           
-        print("getting cursor...")
-        cursor = con.cursor()
-    
-        try:
-            cursor.execute("USE {}".format(DB_CREATION.DB_NAME))
-            cursor.execute(coinString)
-            cursor.execute(quoteString)
+        # for coin in self.coins:
+        #     coinEntry = sqlEntry.insertOneString("coins", coin)
+        
+        # for quote in self.quotes:
+        #     quoteEntryStrings.append(sqlEntry)
+        print("Starting insertion of coins")
+        for coin in self.coins:
+            print(coin)
+            try:
+                con = mysqlc.connect(user = MySQL.USER, password = MySQL.PASSWORD,
+                                    host = MySQL.HOST, port = MySQL.PORT,
+                                    database = MySQL.DB)
+            except mysqlc.Error as e:
+                if e.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+                    print("Something is wrong with your user name or password")
+                elif e.errno == errorcode.ER_BAD_DB_ERROR:
+                    print("Database does not exist")
+                else:
+                    print(e)
             
-        except mysqlc.Error as err:
-            print(err)
-        else:
-            print(err)
-            exit(1)
+            cursor = con.cursor()
+    
+            try:
+                currString = None
+                cursor.execute("USE {}".format(DB_CREATION.DB_NAME))
+                currString = sqlEntry.insertOneString("coins", coin)
+                cursor.execute(currString)
+                # cursor.execute(coinString)
+                # cursor.execute(quoteString)
+                
+                con.close
+            except mysqlc.Error as err:
+                print(err)
+                print(currString)
+                exit(1)
+            else:
+                exit(1)
         
-        con.close()
     
     def createDatabase(self) -> mysqlc.connection:
         try:
@@ -69,6 +83,7 @@ class CoinDB:
                 print("Database does not exist")
             else:
                 print(e)
+            exit(1)
            
         print("getting cursor...")
         cursor = con.cursor()
@@ -109,7 +124,8 @@ class CoinDB:
     # Add coin and quote to internal list
     def addCoin(self, coin) -> None:
         self.quotes.append(coin.quote)
-        if not coin.containedIn(self.coins):
+        if coin.symbol not in self.symbols:
+            self.symbols.append(coin.symbol)
             self.coins.append(coin)
            
     def resetParams(self) -> None:
