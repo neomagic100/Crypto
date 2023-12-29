@@ -1,7 +1,49 @@
 from __future__ import print_function
-from mysql.connector import errorcode
 import mysql.connector
 
+class CoinsTableConstants:
+    ID = 'id'
+    NAME = 'name'
+    SYMBOL = 'symbol'
+    SLUG = 'slug'
+    NUM_MARKET_PAIRS = 'num_market_pairs'
+    DATE_ADDED = 'date_added'
+    TAGS = 'tags'
+    MAX_SUPPLY = 'max_supply'
+    CIRCULATING_SUPPLY = 'circulating_supply'
+    TOTAL_SUPPLY = 'total_supply'
+    INFINITE_SUPPLY = 'infinite_supply'
+    PLATFORM = 'platform'
+    CMC_RANK = 'cmc_rank'
+    SELF_REPORTED_CIRCULATING_SUPPLY = 'self_reported_circulating_supply'
+    SELF_REPORTED_MARKET_CAP = 'self_reported_market_cap'
+    TVL_RATIO = 'tvl_ratio'
+    LAST_UPDATED = 'last_updated'
+    CURRENCY = 'currency'
+
+    @classmethod
+    def __iter__(cls):
+        values = []
+        
+        for key, value in cls.__dict__.items():
+            if not key.startswith("__"):
+                values.append(value)
+        return iter(values)
+    
+def getColumns(tableConstants):
+    const = tableConstants()
+    cols = [col for col in const]
+    return cols
+
+class CoinTable:
+    def getColumnsString():
+        cols = getColumns(CoinsTableConstants)
+        s = ""
+        for col in cols:
+            s += "`{}`, ".format(col)
+        s = s[0 : -2]
+        return "(" + s + ")"
+    
 class DB_CREATION:
     DB_NAME = "crypto"
     TABLES = {}
@@ -12,18 +54,18 @@ class DB_CREATION:
         "   `name` varchar(80) NOT NULL,"
         "   `symbol` varchar(16) NOT NULL,"
         "   `slug` TEXT, "
-        "   `num_market_pairs` int(16) DEFAULT 0,"
+        "   `num_market_pairs` int(16),"
         "   `date_added` date NOT NULL,"
         "   `tags` BLOB, "
-        "   `max_supply` REAL DEFAULT 0,"
-        "   `circulating_supply` REAL DEFAULT 0,"
-        "   `total_supply` REAL DEFAULT 0,"
+        "   `max_supply` REAL,"
+        "   `circulating_supply` REAL,"
+        "   `total_supply` REAL,"
         "   `infinite_supply` TEXT,"
         "   `platform` TEXT,"
         "   `cmc_rank` int(10) NOT NULL,"
-        "   `self_reported_circulating_supply` REAL DEFAULT 0,"
-        "   `self_reported_market_cap` REAL DEFAULT 0,"
-        "   `tvl_ratio` REAL DEFAULT 0,"
+        "   `self_reported_circulating_supply` REAL,"
+        "   `self_reported_market_cap` REAL,"
+        "   `tvl_ratio` REAL,"
         "   `last_updated` date," 
         "   `currency` varchar(5) DEFAULT 'USD',"
         "   PRIMARY KEY(`symbol`)"

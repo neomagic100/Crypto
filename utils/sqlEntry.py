@@ -1,3 +1,6 @@
+from createDBScript import CoinTable
+from utils.EntryDates import Date
+
 class sqlEntry():
     def __init__(self):
         pass
@@ -9,7 +12,7 @@ class sqlEntry():
         valueDict = self.toEntry()
         s = '('
         for val in valueDict.values():
-            if type(val) == int or type(val) == float:
+            if type(val) == int or type(val) == float or type(val) == Date:
                 s += f'{val}, '
             else:
                 s += f'"{val}", '
@@ -33,11 +36,14 @@ class sqlEntry():
         insert = insert[0:-2] + ";"
         return insert
     
+    @staticmethod
     def insertOneString(tableName, item):
         insert = "INSERT INTO `{}` VALUES ".format(tableName)
         insert += item.toMysqlValuesString() + ";"
         return insert
     
-    def getSqlDate(self, date):
-        pass
+    def insertOneValueString(tableName, valueString):
+        insert = ("INSERT INTO %s%s VALUES %s;" % (tableName, CoinTable.getColumnsString(), valueString))
+        return "%s" % insert
+
      

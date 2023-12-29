@@ -6,6 +6,7 @@ import sqlite3
 from utils.sqlEntry import sqlEntry
 from utils.globalConstants import SQL
 from datetime import datetime, date
+from utils.EntryDates import Date
 
 class Coin(sqlEntry):
     def __init__(self, unparsedCoin):
@@ -38,7 +39,7 @@ class Coin(sqlEntry):
         self.symbol = data["symbol"]
         self.slug = data["slug"]
         self.num_market_pairs = int(data["num_market_pairs"])
-        self.date_added = parser.parse(data["date_added"])
+        self.date_added = Date(data["date_added"])
         self.tags = data["tags"] # FIXME loaded in DB with weird formatting
         self.max_supply = castFloat(data["max_supply"])
         self.circulating_supply = castFloat(data["circulating_supply"])
@@ -49,9 +50,10 @@ class Coin(sqlEntry):
         self.self_reported_circulating_supply = castFloat(data["self_reported_circulating_supply"])
         self.self_reported_market_cap = castFloat(data["self_reported_market_cap"])
         self.tvl_ratio = castFloat(data["tvl_ratio"])
-        self.last_updated = parser.parse(data["last_updated"])
+        self.last_updated = Date(data["last_updated"])
         self.currency = self.getCurrency(data["quote"])
-        self.quote = self.createQuote(data["quote"]) 
+        self.quote = self.createQuote(data["quote"])
+        self.valueString = self.toMysqlValuesString()
 
     def createQuote(self, quoteData):
         quote = Quote(quoteData, self.currency, self.symbol)
@@ -66,19 +68,20 @@ class Coin(sqlEntry):
         for key in dictkeys:
             return key
         
+    def getValueString(self):
+        return self.valueString
+        
     def toEntry(self):     # Removed Tags
         self.fixPossibleNones()   
         entryDict = {"id": self.id, "name": f"{self.name}", "symbol": f"{self.symbol}", "slug": f"{self.slug}", "num_market_pairs": self.num_market_pairs, 
-            "date_added": self.getSqlDate(self.date_added), "tags": "Empty", "max_supply": self.max_supply, "circulating_supply": self.circulating_supply, 
+            "date_added": self.date_added, "tags": "Empty", "max_supply": self.max_supply, "circulating_supply": self.circulating_supply, 
             "total_supply": self.total_supply, "infinite_supply": f"{self.infinite_supply}", "platform": f"{self.platform}", "cmc_rank": self.cmc_rank, 
             "self_reported_circulating_supply": self.self_reported_circulating_supply, "self_reported_market_cap": self.self_reported_market_cap, 
-            "tvl_ratio": self.tvl_ratio, "last_updated": self.getSqlDate(self.last_updated), "currency": f"{self.currency}"}
+            "tvl_ratio": self.tvl_ratio, "last_updated": self.last_updated, "currency": f"{self.currency}"}
         
         return entryDict
     
-    def getSqlDate(self, date):
-        fDate = date.strftime(SQL.DATE_FORMAT)
-        return fDate
+    
     
     def fixPossibleNones(self):
         if self.circulating_supply is None or self.circulating_supply == "None":

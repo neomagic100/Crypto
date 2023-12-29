@@ -20,9 +20,7 @@ class CoinCap:
             self.coins.append(coin)
             
     def initCoinData(self):
-        for coin in self.coins:
-            self.coinDB.addCoin(coin)
-        print("Coins and Quotes fetched")
+        self.coinDB.addCoins(self.coins)
         self.coinDB.insertCoinsToTable()
     
     def getDB(self):
