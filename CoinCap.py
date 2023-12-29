@@ -1,6 +1,6 @@
 from coinmarketcap import DataRequest
 from Coins import CoinDB
-
+from time import sleep
 class CoinCap:
     def __init__(self, begin = True, start = None, limit = None, convert = None):
         self.data = self.capture(begin, start, limit, convert)
@@ -15,5 +15,8 @@ class CoinCap:
         return self.coinDB
     
 if __name__ == "__main__":
-    coinCapture = CoinCap()
+    while True:
+        coinCapture = CoinCap()
+        coinCapture = None
+        sleep(300.0)
     
