@@ -6,12 +6,15 @@ class TABLES:
 
 # Not secret since all local  
 class Mongo:
-    CLIENT     = "mongodb://localhost:27017/"
-    DB         = "coins"
-    COIN_COLLECTION = "_coinEntries"
+    DB         = "crypto"
+    COIN_COLLECTION = "coins"
+    QUOTES     = "quotes"
     USERNAME   = "root"
     PASSWORD   = "password"
+    CLIENT     = "mongodb://localhost:27017"
     SLEEP      = 1
+    LOG        = "scriptLog"
+    LOG_DIR    = "logs"
 
 class MySQL:
     USER = "root"

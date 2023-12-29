@@ -5,6 +5,8 @@ test.*
 root/
 jsontest
 */testing.py
+logs
+mongodb
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

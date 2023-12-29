@@ -1,6 +1,5 @@
 # Required packages
-mysql >= 0.0.3
-mysql-connector-python
+pymongo
 datetime
 dateutils
 requests
